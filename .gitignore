@@ -1,8 +1,8 @@
 .DS_Store
-node_modules
-/frontend/dist
+frontend/node_modules/
+dist
 __pycache__
-
+frontend/dist/
 
 # local env files
 .env.local
