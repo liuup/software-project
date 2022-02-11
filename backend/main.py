@@ -1,13 +1,13 @@
-from sqlite3 import Cursor
-from threading import local
-from typing import Optional
+# from sqlite3 import Cursor
+# from threading import local
+# from typing import Optional
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 import json
 import mysql.connector
-import datetime
+# import datetime
 
 
 app = FastAPI()
@@ -46,10 +46,7 @@ failure_json = json.dumps({"status": "failure"})
 '''
 @app.get("/user/info")
 def get_userinfo():
-    cnx = mysql.connector.connect(user = localdb["user"],
-                                  password = localdb["password"],
-                                  host = localdb["host"], 
-                                  database = localdb["database"])
+    cnx = mysql.connector.connect(**localdb)
     # 查询游针
     cursor = cnx.cursor()
 
@@ -78,8 +75,6 @@ def get_userinfo():
             res_disc[desc[j][0]] = data[i][j]
         res_list.append(res_disc)
 
-    # print(json.dumps(res_list))
-
     # 关闭连接
     cursor.close()
     cnx.close()
@@ -105,27 +100,22 @@ class User(BaseModel):
 
 @app.post("/user/login")
 def userlogin(user: User):
-    cnx = mysql.connector.connect(user = localdb["user"],
-                                  password = localdb["password"],
-                                  host = localdb["host"], 
-                                  database = localdb["database"])
+    cnx = mysql.connector.connect(**localdb)
     # 查询游针
     cursor = cnx.cursor()
 
     # 将接收到的数据转为字典
     post_dict = json.loads(user.json())
-    print(post_dict)
-
 
     query_sql = "select * from user where user_num = " + post_dict["user_num"] + \
                 " and user_pwd = " + post_dict["user_pwd"]
+
+    query_sql = "select * from user where user_num = {} and user_pwd = {}".format(post_dict["user_num"], post_dict["user_pwd"])
 
     cursor.execute(query_sql)
 
     # 全部数据
     data = cursor.fetchall()
-    # 数据描述
-    desc = cursor.description
 
     # 查询失败
     if len(data) == 0:
@@ -144,9 +134,37 @@ def userlogin(user: User):
 '''
 保安登录接口
 '''
+class Guard(BaseModel):
+    guard_num: str
+    guard_pwd: str
+
 @app.post("/guard/login")
-def guardlogin():
-    return success_json
+def guardlogin(guard: Guard):
+    cnx = mysql.connector.connect(**localdb)
+    # 查询游针
+    cursor = cnx.cursor()
+
+    # 将请求体转为字典
+    post_dict = json.loads(guard.json())
+
+    query_sql = "select * from guard where guard_num = {} and guard_pwd = {}".format(post_dict["guard_num"], post_dict["guard_pwd"])
+
+    cursor.execute(query_sql)
+
+    # 全部数据
+    data = cursor.fetchall()
+
+    # 查询失败
+    if len(data) == 0:
+        cursor.close()
+        cnx.close()
+        return failure_json
+
+    # 查询成功
+    if post_dict["guard_num"] == data[0][2] and post_dict["guard_pwd"] == data[0][3]:
+        cursor.close()
+        cnx.close()
+        return success_json
 
 
 
@@ -158,7 +176,7 @@ def user_register():
     return success_json
 
 
-
+# TODO:
 '''
 保安注册接口
 '''

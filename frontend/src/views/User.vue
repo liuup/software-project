@@ -1,23 +1,18 @@
 <template>
   <div class="user">
-    <!-- <el-image :src="img_url"></el-image> -->
+    <el-image :src="img_url"></el-image>
     
     <el-form
       :label-position="labelPosition"
       :model="loginForm"
     >
-      <!-- <el-form-item label="Name">
-        <el-input v-model="loginForm.user_name" clearable></el-input>
-      </el-form-item> -->
-      <el-form-item label="学号">
+      <el-form-item label="用户学号">
         <el-input v-model="loginForm.user_num" clearable></el-input>
       </el-form-item>
       <el-form-item label="密码">
         <el-input v-model="loginForm.user_pwd" type="password" show-password></el-input>
       </el-form-item>
-      <!-- <el-form-item label="Password Again">
-        <el-input v-model="user_pwd_again" type="password" show-password></el-input>
-      </el-form-item> -->
+
     </el-form>
 
     <el-button type="primary" @click="login()">登录</el-button>
@@ -36,9 +31,7 @@ export default {
   name: 'User',
   data() {
     return {
-      img_url: "https://avataaars.io/?avatarStyle=Transparent&topType=LongHairCurly&accessoriesType=Wayfarers&hairColor=BrownDark&facialHairType=Blank&clotheType=ShirtCrewNeck&clotheColor=PastelYellow&eyeType=Side&eyebrowType=DefaultNatural&mouthType=Smile&skinColor=Brown",
-      // img_loading: true,
-      
+      img_url: "https://avataaars.io/?avatarStyle=Circle&topType=ShortHairShortCurly&accessoriesType=Prescription02&hatColor=Blue02&hairColor=BlondeGolden&facialHairType=BeardMedium&facialHairColor=BlondeGolden&clotheType=GraphicShirt&clotheColor=Gray02&graphicType=Bear&eyeType=Side&eyebrowType=FlatNatural&mouthType=Smile&skinColor=Pale",
       
       labelPosition: ref("top"),
       loginForm: {
@@ -51,34 +44,22 @@ export default {
   methods: {
     // 登录方法
     login() {
-      // console.log("login function");
-
       axios
-      .post('http://localhost:8000/user/login', this.loginForm)
+      .post('http://192.168.0.111:8000/user/login', this.loginForm)
       .then(res => {
-        // console.log(res);
-
         this.data = JSON.parse(res.data)
-        // console.log(this.data)
 
         if(this.data.status == "failure") {
           ElMessage.error("账号或密码错误");
         } else if(this.data.status == "successful") {
           ElMessage.success("登录成功");
         }
-
-
-        // console.log(this.data.status);
-        // ElMessage({
-        //   message: "successful",
-        //   type: "success"
-        // })
       })
       .catch(err => {
         console.log(err);
       });
 
-      this.cancel();
+      this.cancel(); // 清空输入框
     },
 
     // 清除方法
@@ -90,7 +71,8 @@ export default {
 
     // 注册方法
     register() {
-      // console.log("register function");
+      console.log("register function");
+      // TODO: 补全
     }
 
 
@@ -99,16 +81,9 @@ export default {
 </script>
 
 <style>
-/* .user {
-  text-align: center;
-} */
 el-link {
   padding: 50px;
 }
-
-/* img {
-  height: auto;
-} */
 
 .el-sk-item {
   width: 300px;
