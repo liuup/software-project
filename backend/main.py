@@ -1,13 +1,9 @@
-# from sqlite3 import Cursor
-# from threading import local
-# from typing import Optional
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 import json
 import mysql.connector
-# import datetime
 
 
 app = FastAPI()
@@ -42,16 +38,16 @@ failure_json = json.dumps({"status": "failure"})
 
 
 '''
-查询用户数据接口
+查询用户数据接口, 获取已通过和未通过的用户数据
 '''
-@app.get("/user/info")
-def get_userinfo():
+@app.get("/user/info/{ispass}")
+def get_userinfo(ispass: int):
     cnx = mysql.connector.connect(**localdb)
     # 查询游针
     cursor = cnx.cursor()
 
     query_sql = "select user_id, user_name, user_num, car_name, car_start_time, car_end_time " + \
-                "from user, car where user.user_num = car.for_user_num;"
+                "from user, car where user.user_num = car.for_user_num and car.car_is_pass = " + str(ispass)
 
     cursor.execute(query_sql)
 
@@ -79,9 +75,14 @@ def get_userinfo():
     cursor.close()
     cnx.close()
 
-    return success_json
+    if len(res_list) == 0:
+        return failure_json
+    else:
+        return json.dumps(res_list)
+    
 
 
+# FIXME:
 '''
 查询保安数据接口
 '''
@@ -107,8 +108,8 @@ def userlogin(user: User):
     # 将接收到的数据转为字典
     post_dict = json.loads(user.json())
 
-    query_sql = "select * from user where user_num = " + post_dict["user_num"] + \
-                " and user_pwd = " + post_dict["user_pwd"]
+    # query_sql = "select * from user where user_num = " + post_dict["user_num"] + \
+    #             " and user_pwd = " + post_dict["user_pwd"]
 
     query_sql = "select * from user where user_num = {} and user_pwd = {}".format(post_dict["user_num"], post_dict["user_pwd"])
 
@@ -117,16 +118,15 @@ def userlogin(user: User):
     # 全部数据
     data = cursor.fetchall()
 
+    cursor.close()
+    cnx.close()
+
     # 查询失败
     if len(data) == 0:
-        cursor.close()
-        cnx.close()
         return failure_json
 
     # 查询成功
     if post_dict["user_num"] == data[0][2] and post_dict["user_pwd"] == data[0][3]:
-        cursor.close()
-        cnx.close()
         return success_json
 
 
@@ -154,16 +154,15 @@ def guardlogin(guard: Guard):
     # 全部数据
     data = cursor.fetchall()
 
+    cursor.close()
+    cnx.close()
+
     # 查询失败
     if len(data) == 0:
-        cursor.close()
-        cnx.close()
         return failure_json
 
     # 查询成功
     if post_dict["guard_num"] == data[0][2] and post_dict["guard_pwd"] == data[0][3]:
-        cursor.close()
-        cnx.close()
         return success_json
 
 
@@ -176,7 +175,7 @@ def user_register():
     return success_json
 
 
-# TODO:
+# FIXME:
 '''
 保安注册接口
 '''
@@ -186,4 +185,37 @@ def guard_register():
 
 
 
+'''
+修改车辆通过接口
+'''
+class Car(BaseModel):
+    for_user_num: str
+    car_name: str
+    car_is_pass: str
 
+@app.post("/car/manage")
+def car_manage(car: Car):
+    print(car)
+
+    cnx = mysql.connector.connect(**localdb)
+    # 查询游针
+    cursor = cnx.cursor()
+    
+    # 获取post请求体的字典类型数据
+    car_dict = json.loads(car.json())
+      
+    sql = "update car set car_is_pass = '{}' where for_user_num = '{}' and car_name = '{}';"\
+                .format(str(car_dict["car_is_pass"]), str(car_dict["for_user_num"]), str(car_dict["car_name"]))
+
+    # print(query_sql)
+    cursor.execute(sql)
+    
+    cnx.commit()
+
+    cursor.close()
+    cnx.close()
+
+    if cursor.rowcount == 0:
+        return failure_json
+    else:
+        return success_json
