@@ -24,6 +24,7 @@
 
 <script>
 import { ElMessage } from 'element-plus'
+import axios from 'axios';
 
 export default {
     name: "UserRegiter",
@@ -34,7 +35,9 @@ export default {
                 user_num: "",
                 user_pwd: ""
             },
-            user_pwd_again: ""
+            user_pwd_again: "",
+
+            res_data: {}
 
         }
     },
@@ -60,7 +63,21 @@ export default {
             }
 
             // TODO: 处理提交post逻辑
+            axios
+                .post("http://192.168.0.111:8000/user/register", this.user_register_form)
+                .then(res => {
+                    this.res_data = JSON.parse(res.data);
 
+                    if(this.res_data.status == "failure") {
+                        ElMessage.error("注册失败");
+                    } else if(this.res_data.status == "successful") {
+                        ElMessage.success("注册成功");
+                        this.$router.push({path: "/"});  // 跳转到用户登录路由
+                    }
+                })
+                .catch(err => {
+                    console.log(err);
+                })
 
         },
 

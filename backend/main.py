@@ -170,9 +170,36 @@ def guardlogin(guard: Guard):
 '''
 用户注册接口
 '''
+class UserReg(BaseModel):
+    user_name: str
+    user_num: str
+    user_pwd: str
+
 @app.post("/user/register")
-def user_register():
-    return success_json
+def user_register(userreg: UserReg):
+    cnx = mysql.connector.connect(**localdb)
+    # 查询游针
+    cursor = cnx.cursor()
+    
+    # 获取post请求体的字典类型数据
+    user_dict = json.loads(userreg.json())
+
+    sql = "insert into user(user_name, user_num, user_pwd) values ('{}', '{}', '{}')"\
+            .format(user_dict["user_name"], user_dict["user_num"], user_dict["user_pwd"])
+    
+    # TODO: 如果数据库中已存在注册的学号，该如何增加拒绝注册的逻辑
+    
+    cursor.execute(sql)
+    cnx.commit()
+
+    cursor.close()
+    cnx.close()
+
+    if cursor.rowcount == 0:
+        return failure_json
+    else:
+        return success_json
+
 
 
 # FIXME:

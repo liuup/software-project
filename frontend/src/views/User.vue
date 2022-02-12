@@ -42,6 +42,8 @@ export default {
         user_pwd: ""  // 用户密码
       },
 
+      res_data: {},
+
       testusers: [
         {"user_num": "183424080320", "user_pwd": "123"},
         {"user_num": "183406010501", "user_pwd": "456"},
@@ -61,7 +63,7 @@ export default {
       axios
         .post('http://192.168.0.111:8000/user/login', this.loginForm)
         .then(res => {
-          this.data = JSON.parse(res.data)
+          this.data = JSON.parse(res.data);
 
           if(this.data.status == "failure") {
             ElMessage.error("账号或密码错误");

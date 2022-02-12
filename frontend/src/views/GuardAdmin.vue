@@ -52,7 +52,9 @@ export default {
                 for_user_num: "",
                 car_name: "",
                 car_is_pass: ""
-            }
+            },
+
+            res_data: {}
             
         }
     },
@@ -76,9 +78,11 @@ export default {
                 .then(res => {
                     console.log(res);
 
-                    if(this.data.status == "failure") {
+                    this.res_data = JSON.parse(res.data);
+
+                    if(res.data.status == "failure") {
                         ElMessage.error("操作失败");
-                    } else if(this.data.status == "successful") {
+                    } else if(res.data.status == "successful") {
                         ElMessage.success("操作成功");
                     }
                 })
@@ -90,7 +94,7 @@ export default {
         },
 
         onNoPass(index) {
-            console.log("no pass func " + index);
+            // console.log("no pass func " + index);
 
             this.guard_handling_info.for_user_num = this.user_pass_info[index].user_num;
             this.guard_handling_info.car_name = this.user_pass_info[index].car_name;
@@ -131,7 +135,7 @@ export default {
         axios
             .get("http://192.168.0.111:8000/user/info/1")
             .then(res => {
-                console.log(res.data);
+                // console.log(res.data);
                 this.user_pass_info = JSON.parse(res.data);
             })
             .catch(err => {
