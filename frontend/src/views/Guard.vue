@@ -3,7 +3,7 @@
     <el-image :src="img_url"></el-image>
 
     <el-form
-      :label-position="labelPosition"
+      label-position="top"
       :model="loginForm"
     >
       <el-form-item label="保安工号">
@@ -38,7 +38,6 @@ export default {
       // img_url: "https://avataaars.io/?avatarStyle=Circle&topType=LongHairFrida&accessoriesType=Prescription01&facialHairType=MoustacheFancy&facialHairColor=Black&clotheType=BlazerShirt&clotheColor=Gray01&eyeType=Wink&eyebrowType=SadConcerned&mouthType=Grimace&skinColor=Pale",
       img_url: "https://api.multiavatar.com/d6463fcebcd1033da0.svg",
 
-      labelPosition: ref("top"),
       loginForm: {
         guard_num: "",
         guard_pwd: ""
@@ -52,6 +51,12 @@ export default {
   },
   methods: {
     login() {
+      if(this.loginForm.guard_num == "" || this.loginForm.guard_pwd == "") {
+        ElMessage.error("禁止输入为空");
+        this.cancel();
+        return
+      }
+
       axios
         .post('http://192.168.0.111:8000/guard/login', this.loginForm)
         .then(res => {

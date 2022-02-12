@@ -3,7 +3,7 @@
     <el-image :src="img_url"></el-image>
     
     <el-form
-      :label-position="labelPosition"
+      label-position="top"
       :model="loginForm"
     >
       <el-form-item label="用户学号">
@@ -35,15 +35,13 @@ export default {
   name: 'User',
   data() {
     return {
-      // img_url: "https://avataaars.io/?avatarStyle=Circle&topType=ShortHairShortCurly&accessoriesType=Prescription02&hatColor=Blue02&hairColor=BlondeGolden&facialHairType=BeardMedium&facialHairColor=BlondeGolden&clotheType=GraphicShirt&clotheColor=Gray02&graphicType=Bear&eyeType=Side&eyebrowType=FlatNatural&mouthType=Smile&skinColor=Pale",
       img_url: "https://api.multiavatar.com/6a9128b7c6947fe71b.svg",
 
-      labelPosition: ref("top"),
       loginForm: {
         user_num: "", // 用户学号
         user_pwd: ""  // 用户密码
       },
-      // data: {},
+
       testusers: [
         {"user_num": "183424080320", "user_pwd": "123"},
         {"user_num": "183406010501", "user_pwd": "456"},
@@ -54,6 +52,12 @@ export default {
   methods: {
     // 登录方法
     login() {
+      if(this.loginForm.user_num == "" || this.loginForm.user_pwd == "") {
+        ElMessage.error("禁止输入为空");
+        this.cancel();
+        return
+      }
+
       axios
         .post('http://192.168.0.111:8000/user/login', this.loginForm)
         .then(res => {
@@ -63,6 +67,7 @@ export default {
             ElMessage.error("账号或密码错误");
           } else if(this.data.status == "successful") {
             ElMessage.success("登录成功");
+            this.$router.push({path: "/user/admin"});  // 跳转到用户管理路由
           }
         })
         .catch(err => {
@@ -70,8 +75,6 @@ export default {
         });
 
       this.cancel(); // 清空输入框
-
-      // TODO: 登录后的界面组件
     },
 
     // 清除方法
@@ -90,10 +93,6 @@ export default {
 </script>
 
 <style>
-el-link {
-  padding: 50px;
-}
-
 .el-sk-item {
   width: 300px;
   height: 300px;
