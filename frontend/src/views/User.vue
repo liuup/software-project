@@ -27,7 +27,6 @@
 </template>
 
 <script>
-import { ref } from "vue"
 import axios from "axios"
 import { ElMessage } from "element-plus";
 
@@ -95,10 +94,5 @@ export default {
 </script>
 
 <style>
-.el-sk-item {
-  width: 300px;
-  height: 300px;
-  text-align: center;
-}
 
 </style>

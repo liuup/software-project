@@ -27,7 +27,6 @@
 
 
 <script>
-import { ref } from "vue"
 import axios from "axios"
 import { ElMessage } from "element-plus";
 
@@ -35,7 +34,6 @@ export default {
   name: "Guard",
   data() {
     return {
-      // img_url: "https://avataaars.io/?avatarStyle=Circle&topType=LongHairFrida&accessoriesType=Prescription01&facialHairType=MoustacheFancy&facialHairColor=Black&clotheType=BlazerShirt&clotheColor=Gray01&eyeType=Wink&eyebrowType=SadConcerned&mouthType=Grimace&skinColor=Pale",
       img_url: "https://api.multiavatar.com/d6463fcebcd1033da0.svg",
 
       loginForm: {

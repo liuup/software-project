@@ -1,5 +1,4 @@
 import { createRouter, createWebHistory } from 'vue-router'
-// import Home from '../views/User.vue'
 
 const routes = [
   {
@@ -10,10 +9,7 @@ const routes = [
   {
     path: '/guard',
     name: 'Guard',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/Guard.vue')
+    component: () => import('../views/Guard.vue')
   },
   {
     path: "/guard/admin",
@@ -30,8 +26,6 @@ const routes = [
     name: "UserRegister",
     component: () => import("../views/UserRegister.vue")
   }
-  // TODO: 用户登录后的界面，还需要增加用户提交数据的表单
-  // TODO: 用户注册的组件
 ]
 
 const router = createRouter({

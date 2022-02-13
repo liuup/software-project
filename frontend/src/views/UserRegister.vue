@@ -38,7 +38,6 @@ export default {
             user_pwd_again: "",
 
             res_data: {}
-
         }
     },
 
@@ -62,7 +61,6 @@ export default {
                 return
             }
 
-            // TODO: 处理提交post逻辑
             axios
                 .post("http://192.168.0.111:8000/user/register", this.user_register_form)
                 .then(res => {
@@ -78,7 +76,6 @@ export default {
                 .catch(err => {
                     console.log(err);
                 })
-
         },
 
         // 表单重置
@@ -89,8 +86,6 @@ export default {
             this.user_pwd_again = "";
         }
     }
-
-
 }
 </script>
 

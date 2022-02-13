@@ -55,7 +55,6 @@ export default {
             // 是否显示抽屉
             drawer: false,
 
-
             // 用户在抽屉中填写的表单
             car_info: {
                 for_user_num: "183424080320",
@@ -95,6 +94,8 @@ export default {
                 });
 
             this.cancel();
+            // 刷新页面
+            this.$router.go(0);
         },
 
         cancel() {
@@ -107,7 +108,7 @@ export default {
             .get("http://192.168.0.111:8000/user/info/?ispass=0&user_num=183424080320")
             .then(res => {
                 this.user_nopass_info = JSON.parse(res.data);
-                console.log(res.data);
+                // console.log(res.data);
             })
             .catch(err => {
                 console.log(err);
@@ -118,7 +119,7 @@ export default {
             .then(res => {
                 // console.log(res);
                 this.user_pass_info = JSON.parse(res.data);
-                console.log(res.data);
+                // console.log(res.data);
             })
             .catch(err => {
                 console.log(err);
