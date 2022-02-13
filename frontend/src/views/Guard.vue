@@ -18,10 +18,10 @@
     <el-button type="primary" @click="login()">登录</el-button>
     <el-button @click="cancel()">清空</el-button>
     
-    <!-- <el-table :data="testguards" border stripe>
+    <el-table :data="testguards" border stripe>
       <el-table-column prop="guard_num" label="测试工号"/>
       <el-table-column prop="guard_pwd" label="测试密码"/>
-    </el-table> -->
+    </el-table>
   </div>
 </template>
 

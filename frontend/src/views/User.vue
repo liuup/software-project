@@ -19,10 +19,10 @@
     <el-button @click="cancel()">清空</el-button>
     <el-button type="info" plain @click="register()">注册</el-button>
 
-    <!-- <el-table :data="testusers" border stripe>
+    <el-table :data="testusers" border stripe>
       <el-table-column prop="user_num" label="测试学号"/>
       <el-table-column prop="user_pwd" label="测试密码"/>
-    </el-table> -->
+    </el-table>
   </div>
 </template>
 

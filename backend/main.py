@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+from typing import Optional
 
 import json
 import mysql.connector
@@ -40,15 +41,19 @@ failure_json = json.dumps({"status": "failure"})
 '''
 查询用户数据接口, 获取已通过和未通过的用户数据
 '''
-@app.get("/user/info/{ispass}")
-def get_userinfo(ispass: int):
+@app.get("/user/info/")
+def get_userinfo(ispass: str, user_num: Optional[str] = None):
     cnx = mysql.connector.connect(**localdb)
     # 查询游针
     cursor = cnx.cursor()
 
-    query_sql = "select user_id, user_name, user_num, car_name, car_start_time, car_end_time " + \
-                "from user, car where user.user_num = car.for_user_num and car.car_is_pass = " + str(ispass)
-
+    query_sql = ""
+    if user_num == None:
+        query_sql = "select user_id, user_name, user_num, car_name, car_start_time, car_end_time " + \
+                "from user, car where user.user_num = car.for_user_num and car.car_is_pass = {}".format(ispass)
+    else:
+        query_sql = "select user_id, user_name, user_num, car_name, car_start_time, car_end_time from user, car where user.user_num = car.for_user_num and car.car_is_pass = {} and user.user_num = {}".format(ispass, user_num)
+    
     cursor.execute(query_sql)
 
     # 存储数据的列表
@@ -82,16 +87,6 @@ def get_userinfo(ispass: int):
     
 
 
-# FIXME:
-'''
-查询保安数据接口
-'''
-@app.get("/guard/info")
-def get_guardinfo():
-    return success_json
-
-
-
 '''
 用户登录接口
 '''
@@ -107,9 +102,6 @@ def userlogin(user: User):
 
     # 将接收到的数据转为字典
     post_dict = json.loads(user.json())
-
-    # query_sql = "select * from user where user_num = " + post_dict["user_num"] + \
-    #             " and user_pwd = " + post_dict["user_pwd"]
 
     query_sql = "select * from user where user_num = {} and user_pwd = {}".format(post_dict["user_num"], post_dict["user_pwd"])
 
@@ -202,16 +194,6 @@ def user_register(userreg: UserReg):
 
 
 
-# FIXME:
-'''
-保安注册接口
-'''
-@app.post("/guard/register")
-def guard_register():
-    return success_json
-
-
-
 '''
 修改车辆通过接口
 '''
@@ -220,10 +202,8 @@ class Car(BaseModel):
     car_name: str
     car_is_pass: str
 
-@app.post("/car/manage")
-def car_manage(car: Car):
-    print(car)
-
+@app.post("/guard/admin")
+def guard_admin(car: Car):
     cnx = mysql.connector.connect(**localdb)
     # 查询游针
     cursor = cnx.cursor()
@@ -234,7 +214,42 @@ def car_manage(car: Car):
     sql = "update car set car_is_pass = '{}' where for_user_num = '{}' and car_name = '{}';"\
                 .format(str(car_dict["car_is_pass"]), str(car_dict["for_user_num"]), str(car_dict["car_name"]))
 
-    # print(query_sql)
+    cursor.execute(sql)
+    
+    cnx.commit()
+
+    cursor.close()
+    cnx.close()
+
+    if cursor.rowcount == 0:
+        return failure_json
+    else:
+        return success_json
+
+
+
+'''
+用户后台提交车辆数据
+'''
+class CarAdd(BaseModel):
+    for_user_num: str
+    car_name: str
+    car_start_time: str
+    car_end_time: str
+    car_is_pass: str
+
+@app.post("/user/car/add")
+def user_car_add(caradd: CarAdd):
+    cnx = mysql.connector.connect(**localdb)
+    # 查询游针
+    cursor = cnx.cursor()
+    
+    # 获取post请求体的字典类型数据
+    car_dict = json.loads(caradd.json())
+
+    sql = "insert into car values('{}', '{}', '{}', '{}', '{}')"\
+        .format(caradd.for_user_num, caradd.car_name, caradd.car_start_time, caradd.car_end_time, caradd.car_is_pass)
+
     cursor.execute(sql)
     
     cnx.commit()

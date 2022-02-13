@@ -74,7 +74,7 @@ export default {
             console.log(this.guard_handling_info);
 
             axios
-                .post("http://192.168.0.111:8000/car/manage", this.guard_handling_info)
+                .post("http://192.168.0.111:8000/guard/admin", this.guard_handling_info)
                 .then(res => {
                     console.log(res);
 
@@ -103,7 +103,7 @@ export default {
             console.log(this.guard_handling_info);
 
             axios
-                .post("http://192.168.0.111:8000/car/manage", this.guard_handling_info)
+                .post("http://192.168.0.111:8000/guard/admin", this.guard_handling_info)
                 .then(res => {
                     console.log(res);
 
@@ -123,7 +123,7 @@ export default {
 
     mounted() {
         axios
-            .get("http://192.168.0.111:8000/user/info/0")
+            .get("http://192.168.0.111:8000/user/info/?ispass=0")
             .then(res => {
                 // console.log(res.data);
                 this.user_nopass_info = JSON.parse(res.data);
@@ -133,7 +133,7 @@ export default {
             });
 
         axios
-            .get("http://192.168.0.111:8000/user/info/1")
+            .get("http://192.168.0.111:8000/user/info/?ispass=1")
             .then(res => {
                 // console.log(res.data);
                 this.user_pass_info = JSON.parse(res.data);
